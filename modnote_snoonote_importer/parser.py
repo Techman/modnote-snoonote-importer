@@ -21,16 +21,19 @@ REDDIT_MOD_NOTE_LABELS: dict[str, str] = {
 }
 
 # A map between SnooNote labels and their Mod Note counterparts
-SNOONOTE_TO_MOD_NOTE_LABELS: dict[str, str] = {
+SNOONOTE_TO_MOD_NOTE_LABELS: dict[str, Optional[str]] = {
     "Abuse Warning": "ABUSE_WARNING",
     "Ban": "BAN",
     "Bot Ban": "BOT_BAN",
     "Good Contributor": "SOLID_CONTRIBUTOR",
     "Good User": "SOLID_CONTRIBUTOR",
+    "None": None,
     "Perma Ban": "PERMA_BAN",
+    "Shadow Ban": "ABUSE_WARNING",
     "Spam Ban": "BAN",
     "Spam Perma": "PERMA_BAN",
     "Spam Warn": "SPAM_WARNING",
+    "Spam Warning": "SPAM_WARNING",
     "Spam Watch": "SPAM_WATCH",
 }
 
@@ -101,19 +104,28 @@ class SnooNoteParser:
 
                 # Parse out the note types
                 for item in json_output.get("NoteTypes", []):
-                    self._note_types.append(
-                        SnooNoteType(
-                            note_type_id=item["NoteTypeID"],
-                            sub_name=item["SubName"],
-                            display_name=item["DisplayName"],
-                            color_code=item["ColorCode"],
-                            display_order=item["DisplayOrder"],
-                            bold=item["Bold"],
-                            italic=item["Italic"],
-                            icon_string=item["IconString"],
-                            disabled=item["Disabled"],
-                        )
+                    note_type = SnooNoteType(
+                        note_type_id=item["NoteTypeID"],
+                        sub_name=item["SubName"],
+                        display_name=item["DisplayName"],
+                        color_code=item["ColorCode"],
+                        display_order=item["DisplayOrder"],
+                        bold=item["Bold"],
+                        italic=item["Italic"],
+                        icon_string=item["IconString"],
+                        disabled=item["Disabled"],
                     )
+                    # If we have not mapped this note type to a Mod Note label
+                    if note_type.display_name not in SNOONOTE_TO_MOD_NOTE_LABELS:
+                        self._log.error(
+                            "Note type %r is not in the SnooNote to Mod Note map. Please file an issue.",
+                            note_type.display_name,
+                        )
+                        raise ValueError(
+                            f"Note type {note_type.display_name!r} is not defined in the SnooNote to "
+                            "Mod Note map. Please file an issue."
+                        )
+                    self._note_types.append(note_type)
                 self._log.info(
                     "Parsed %s note types", len(json_output.get("NoteTypes", []))
                 )
