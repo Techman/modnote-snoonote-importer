@@ -6,11 +6,14 @@ authors = ["Michael Hazell <michaelhazell@hotmail.com>"]
 readme = "README.md"
 packages = [{include = "modnote_snoonote_importer"}]
 
+[tool.black]
+include = '\.pyi?$'
+line-length = 120
+
 [tool.poetry.dependencies]
 python = "^3.7.2"
 praw = "^7.6.0"
 python-dateutil = "^2.8.2"
-
 
 [tool.poetry.group.dev.dependencies]
 typing-extensions = "^4.3.0"

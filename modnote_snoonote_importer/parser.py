@@ -133,9 +133,7 @@ class SnooNoteParser:
                         )
                     self._note_type_map[note_type.note_type_id] = note_type
                     self._note_types.append(note_type)
-                self._log.info(
-                    "Parsed %s note types", len(json_output.get("NoteTypes", []))
-                )
+                self._log.info("Parsed %s note types", len(json_output.get("NoteTypes", [])))
 
                 # Parse out the notes
                 for item in json_output.get("Notes", []):

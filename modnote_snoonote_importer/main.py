@@ -68,9 +68,7 @@ def main() -> None:
         user_agent="modnote-snoonote-importer by /u/Techman-",
     )
     if reddit.read_only:
-        logger.error(
-            "PRAW is in read-only mode. Probably a configuration or permissions issue."
-        )
+        logger.error("PRAW is in read-only mode. Probably a configuration or permissions issue.")
         raise praw.exceptions.ReadOnlyException
     else:
         logger.info("Reddit set up and ready!")
