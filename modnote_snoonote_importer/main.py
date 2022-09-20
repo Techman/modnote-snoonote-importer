@@ -41,7 +41,21 @@ def main() -> None:
         required=True,
         help="Reddit account password. Imported notes will appear as this user.",
     )
+    parser.add_argument(
+        "file",
+        type=str,
+        default="snoonotes.json",
+        help="Path to the SnooNotes JSON export file.",
+    )
     args = parser.parse_args()
+
+    # Test to make sure the file exists
+    try:
+        with open(args.file, "rt", encoding="utf8") as _:
+            pass
+    except OSError:
+        logger.exception("SnooNotes file not found or unable to be opened.")
+        return
 
     # Setup Reddit
     reddit: praw.models.Redditor = praw.Reddit(
