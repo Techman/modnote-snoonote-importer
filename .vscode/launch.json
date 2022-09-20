@@ -9,7 +9,10 @@
             "type": "python",
             "request": "launch",
             "module": "modnote_snoonote_importer",
-            "justMyCode": false
+            "justMyCode": true,
+            "args": [
+
+            ]
         }
     ]
 }
