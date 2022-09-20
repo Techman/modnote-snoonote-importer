@@ -78,12 +78,18 @@ class SnooNoteParser:
         # Logging
         self._log: logging.Logger = logging.getLogger("parser")
 
-        # Lists to store data
+        # Containers to store data
+        self._note_type_map: dict[int, SnooNoteType] = {}
         self._note_types: list[SnooNoteType] = []
         self._notes: list[SnooNote] = []
 
         # SnooNote data file
         self._file_path: str = data_file
+
+    @property
+    def note_type_map(self) -> dict[int, SnooNoteType]:
+        """Get a map of note types, with the ID as key"""
+        return self._note_type_map
 
     @property
     def note_types(self) -> list[SnooNoteType]:
@@ -125,6 +131,7 @@ class SnooNoteParser:
                             f"Note type {note_type.display_name!r} is not defined in the SnooNote to "
                             "Mod Note map. Please file an issue."
                         )
+                    self._note_type_map[note_type.note_type_id] = note_type
                     self._note_types.append(note_type)
                 self._log.info(
                     "Parsed %s note types", len(json_output.get("NoteTypes", []))
