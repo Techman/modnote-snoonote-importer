@@ -9,6 +9,7 @@ packages = [{include = "modnote_snoonote_importer"}]
 [tool.poetry.dependencies]
 python = "^3.7.2"
 praw = "^7.6.0"
+python-dateutil = "^2.8.2"
 
 
 [tool.poetry.group.dev.dependencies]

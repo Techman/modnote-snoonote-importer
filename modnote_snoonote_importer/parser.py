@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
+import dateutil.parser
+
 REDDIT_MOD_NOTE_LABELS: dict[str, str] = {
     "ABUSE_WARNING": "Abuse Warning",
     "BAN": "Ban",
@@ -90,45 +92,6 @@ class SnooNoteParser:
         """Get parsed notes"""
         return self._notes
 
-    def _parse_timestamp_str(self, *, time_str: str) -> datetime:
-        """Parse datetime strings from SnooNotes
-
-        Arguments:
-            time_str -- The date+time string
-
-        Returns:
-            Python datetime object
-        """
-        # https://docs.python.org/3/library/datetime.html?highlight=time#strftime-and-strptime-format-codes
-
-        # There are unfortunately a few versions of time strings that can be found in notes, so I try to handle all
-        # known cases
-        # Case 1: 2021-05-26T05:14:31.073Z
-        try:
-            time = datetime.strptime(
-                time_str.replace("Z", "UTC"), "%Y-%m-%dT%H:%M:%S.%f%Z"
-            )
-            return time
-        except ValueError:
-            pass
-
-        # Case 2: 2016-01-22T06:28:10Z
-        try:
-            time = datetime.strptime(
-                time_str.replace("Z", "UTC"), "%Y-%m-%dT%H:%M:%S%Z"
-            )
-            return time
-        except ValueError:
-            pass
-
-        # Base case: try ISO date string
-        try:
-            time = datetime.fromisoformat(time_str)
-            return time
-        except ValueError as e:
-            self._log.exception("Base case failed")
-            raise e
-
     def parse(self):
         """Parse the SnooNote export"""
         # Open the SnooNote file
@@ -165,7 +128,7 @@ class SnooNoteParser:
                         message=item["Message"],
                         applies_to_username=item["AppliesToUsername"],
                         url=item["Url"],
-                        timestamp=self._parse_timestamp_str(time_str=item["Timestamp"]),
+                        timestamp=dateutil.parser.isoparse(item["Timestamp"]),
                         parent_subreddit=item["ParentSubreddit"],
                     )
                     if len(note.message) > 250:
