@@ -3,7 +3,7 @@
 # https://praw.readthedocs.io/en/stable/code_overview/other/subreddit_mod_notes.html
 from dataclasses import dataclass
 from datetime import datetime
-
+import logging
 
 REDDIT_MOD_NOTE_LABELS: dict[str, str] = {
     "ABUSE_WARNING": "Abuse Warning",
@@ -60,3 +60,29 @@ class SnooNote:
     url: str
     timestamp: datetime
     parent_subreddit: str
+
+
+class SnooNoteParser:
+    """SnooNote Parser and container of parsed data"""
+
+    def __init__(self, *, data_file: str):
+        """Init"""
+        # Logging
+        self._log: logging.Logger = logging.getLogger("parser")
+
+        # Lists to store data
+        self._note_types: list[SnooNoteType] = []
+        self._notes: list[SnooNote] = []
+
+        # SnooNote data file
+        self._file_path: str = data_file
+
+    @property
+    def note_types(self) -> list[SnooNoteType]:
+        """Get parsed note types"""
+        return self._note_types
+
+    @property
+    def notes(self) -> list[SnooNote]:
+        """Get parsed notes"""
+        return self._notes
