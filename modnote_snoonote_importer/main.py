@@ -1,11 +1,13 @@
 """Import SnooNotes into Mod Notes"""
 
+import logging
 from argparse import ArgumentParser
 
-import logging
 import praw
 import praw.exceptions
 import praw.models
+
+from modnote_snoonote_importer.parser import SnooNoteParser
 
 
 def main() -> None:
@@ -72,3 +74,7 @@ def main() -> None:
         raise praw.exceptions.ReadOnlyException
     else:
         logger.info("Reddit set up and ready!")
+
+    # Set up parser and parse data
+    parser = SnooNoteParser(data_file=args.file)
+    parser.parse()

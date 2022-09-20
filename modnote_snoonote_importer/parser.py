@@ -1,9 +1,11 @@
 """Parse SnooNotes"""
 
 # https://praw.readthedocs.io/en/stable/code_overview/other/subreddit_mod_notes.html
+import json
+import logging
 from dataclasses import dataclass
 from datetime import datetime
-import logging
+from typing import Optional
 
 REDDIT_MOD_NOTE_LABELS: dict[str, str] = {
     "ABUSE_WARNING": "Abuse Warning",
@@ -59,7 +61,7 @@ class SnooNote:
     applies_to_username: str
     url: str
     timestamp: datetime
-    parent_subreddit: str
+    parent_subreddit: Optional[str]
 
 
 class SnooNoteParser:
@@ -86,3 +88,95 @@ class SnooNoteParser:
     def notes(self) -> list[SnooNote]:
         """Get parsed notes"""
         return self._notes
+
+    def _parse_timestamp_str(self, *, time_str: str) -> datetime:
+        """Parse datetime strings from SnooNotes
+
+        Arguments:
+            time_str -- The date+time string
+
+        Returns:
+            Python datetime object
+        """
+        # https://docs.python.org/3/library/datetime.html?highlight=time#strftime-and-strptime-format-codes
+
+        # There are unfortunately a few versions of time strings that can be found in notes, so I try to handle all
+        # known cases
+        # Case 1: 2021-05-26T05:14:31.073Z
+        try:
+            time = datetime.strptime(
+                time_str.replace("Z", "UTC"), "%Y-%m-%dT%H:%M:%S.%f%Z"
+            )
+            return time
+        except ValueError:
+            pass
+
+        # Case 2: 2016-01-22T06:28:10Z
+        try:
+            time = datetime.strptime(
+                time_str.replace("Z", "UTC"), "%Y-%m-%dT%H:%M:%S%Z"
+            )
+            return time
+        except ValueError:
+            pass
+
+        # Base case: try ISO date string
+        try:
+            time = datetime.fromisoformat(time_str)
+            return time
+        except ValueError as e:
+            self._log.exception("Base case failed")
+            raise e
+
+    def parse(self):
+        """Parse the SnooNote export"""
+        # Open the SnooNote file
+        try:
+            with open(self._file_path, "rt", encoding="utf8") as file:
+                json_output = json.load(file)
+
+                # Parse out the note types
+                for item in json_output.get("NoteTypes", []):
+                    self._note_types.append(
+                        SnooNoteType(
+                            note_type_id=item["NoteTypeID"],
+                            sub_name=item["SubName"],
+                            display_name=item["DisplayName"],
+                            color_code=item["ColorCode"],
+                            display_order=item["DisplayOrder"],
+                            bold=item["Bold"],
+                            italic=item["Italic"],
+                            icon_string=item["IconString"],
+                            disabled=item["Disabled"],
+                        )
+                    )
+                self._log.info(
+                    "Parsed %s note types", len(json_output.get("NoteTypes", []))
+                )
+
+                # Parse out the notes
+                for item in json_output.get("Notes", []):
+                    note = SnooNote(
+                        note_id=item["NoteID"],
+                        note_type_id=item["NoteTypeID"],
+                        sub_name=item["SubName"],
+                        submitter=item["Submitter"],
+                        message=item["Message"],
+                        applies_to_username=item["AppliesToUsername"],
+                        url=item["Url"],
+                        timestamp=self._parse_timestamp_str(time_str=item["Timestamp"]),
+                        parent_subreddit=item["ParentSubreddit"],
+                    )
+                    if len(note.message) > 250:
+                        self._log.warning(
+                            "Note %s has message length greater than 250; will be split into multiple notes on import",
+                            note.note_id,
+                        )
+                    self._notes.append(note)
+                self._log.info("Parsed %s notes", len(json_output.get("Notes", [])))
+        except OSError:
+            self._log.exception("Unable to open/read the export file.")
+            return
+
+        # If we made it here, we parsed the file!
+        self._log.debug("Successfully parsed the export file")
