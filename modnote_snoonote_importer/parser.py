@@ -22,10 +22,11 @@ REDDIT_MOD_NOTE_LABELS: dict[str, str] = {
 SNOONOTE_TO_MOD_NOTE_LABELS: dict[str, str] = {
     "Abuse Warning": "ABUSE_WARNING",
     "Ban": "BAN",
+    "Bot Ban": "BOT_BAN",
     "Good User": "SOLID_CONTRIBUTOR",
     "Perma Ban": "PERMA_BAN",
     # "Shadow Ban": "",
-    "Spam Ban": "BOT_BAN",
+    "Spam Ban": "BAN",
     "Spam Perma": "PERMA_BAN",
     "Spam Warn": "SPAM_WARNING",
     "Spam Watch": "SPAM_WATCH",
