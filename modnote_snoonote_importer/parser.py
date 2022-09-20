@@ -24,6 +24,7 @@ SNOONOTE_TO_MOD_NOTE_LABELS: dict[str, str] = {
     "Ban": "BAN",
     "Bot Ban": "BOT_BAN",
     "Good User": "SOLID_CONTRIBUTOR",
+    "Good Contributor": "SOLID_CONTRIBUTOR",
     "Perma Ban": "PERMA_BAN",
     # "Shadow Ban": "",
     "Spam Ban": "BAN",
