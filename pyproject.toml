@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "modnote-snoonote-importer"
+version = "0.1.0"
+description = ""
+authors = ["Michael Hazell <michaelhazell@hotmail.com>"]
+readme = "README.md"
+packages = [{include = "modnote_snoonote_importer"}]
+
+[tool.poetry.dependencies]
+python = "^3.7.2"
+
+
+[tool.poetry.group.dev.dependencies]
+typing-extensions = "^4.3.0"
+black = "^22.8.0"
+pylint = "^2.15.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
