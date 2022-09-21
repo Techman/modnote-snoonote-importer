@@ -215,11 +215,6 @@ class SnooNoteParser:
                         timestamp=dateutil.parser.isoparse(item["Timestamp"]),
                         parent_subreddit=item["ParentSubreddit"],
                     )
-                    if len(note.message) > 250:
-                        self._log.warning(
-                            "Note %s has message length greater than 250; will be split into multiple notes on import",
-                            note.note_id,
-                        )
                     self._notes.append(note)
                 self._log.info("Parsed %s notes", len(json_output.get("Notes", [])))
         except OSError:
