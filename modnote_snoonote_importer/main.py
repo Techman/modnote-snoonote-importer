@@ -75,7 +75,7 @@ def main() -> None:
         # Timeout in seconds
         # https://praw.readthedocs.io/en/stable/getting_started/ratelimits.html
         # Seconds * Minutes * Hours
-        timeout=60 * 60 * 1,
+        timeout=60 * 60 * 5,
     )
     if reddit.read_only:
         logger.error("PRAW is in read-only mode. Probably a configuration or permissions issue.")
