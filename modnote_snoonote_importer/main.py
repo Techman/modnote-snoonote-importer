@@ -1,6 +1,8 @@
 """Import SnooNotes into Mod Notes"""
 
+import json
 import logging
+import logging.config
 from argparse import ArgumentParser
 
 import praw
@@ -48,7 +50,11 @@ def main() -> None:
     """Main function"""
 
     # Set up logging
-    logging.basicConfig(level=logging.INFO)
+    try:
+        with open("logging.json", "rt", encoding="utf8") as file:
+            logging.config.dictConfig(json.load(file))
+    except OSError:
+        logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger("root")
 
     # Test to make sure the file exists
