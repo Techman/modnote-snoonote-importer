@@ -73,7 +73,7 @@ def main() -> None:
     )
     if reddit.read_only:
         logger.error("PRAW is in read-only mode. Probably a configuration or permissions issue.")
-        raise praw.exceptions.ReadOnlyException
+        return
     else:
         logger.info("Reddit set up and ready!")
 

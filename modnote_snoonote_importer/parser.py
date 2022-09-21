@@ -215,6 +215,9 @@ class SnooNoteParser:
                         timestamp=dateutil.parser.isoparse(item["Timestamp"]),
                         parent_subreddit=item["ParentSubreddit"],
                     )
+                    if note.applies_to_username.lower() == "[deleted]":
+                        self._log.warning("Found a SnooNote for [deleted], skipping")
+                        continue
                     self._notes.append(note)
                 self._log.info("Parsed %s notes", len(json_output.get("Notes", [])))
         except OSError:
@@ -224,10 +227,10 @@ class SnooNoteParser:
         # If we made it here, we parsed the file!
         self._log.debug("Successfully parsed the export file")
 
+    # https://www.reddit.com/r/modnews/comments/t8vafc/announcing_mod_notes/ see "Import notes" - says 30 calls/min
     @sleep_and_retry
     @limits(calls=30, period=60 * 1)
-    # https://www.reddit.com/r/modnews/comments/t8vafc/announcing_mod_notes/ see "Import notes" - says 30 calls/min
-    def _post_to_reddit(self, **kwargs):
+    def _post_to_reddit(self, **kwargs) -> bool:
         """Post a Mod Note to Reddit
 
         This function is decorated with a rate limiter (currently 30 calls/minute) and will sleep before continuing.
@@ -236,8 +239,12 @@ class SnooNoteParser:
             reddit -- PRAW Reddit instance
             kwargs -- Keyword arguments to be passed to PRAW for Mod Note creation
         """
-        self._reddit.notes.create(**kwargs)
-        self._log.info("Created Mod Note for Redditor %r", kwargs["redditor"])
+        try:
+            self._reddit.notes.create(**kwargs)
+            return True
+        except Exception:  # pylint: disable=broad-except
+            self._log.exception("Unable to create Mod Note %s", str(kwargs))
+            return False
 
     def convert(self):
         """Convert parsed SnooNotes into Mod Notes
@@ -269,21 +276,27 @@ class SnooNoteParser:
                     header=header, message=snoo_note.message, max_size=MOD_NOTE_MESSAGE_LENGTH
                 ):
                     self._log.info("Creating segmented Mod Note for SnooNote %r", snoo_note.note_id)
-                    self._post_to_reddit(
+                    if self._post_to_reddit(
                         label=SNOONOTE_TO_MOD_NOTE_LABELS[self.note_type_map[snoo_note.note_type_id].display_name],
                         note=message,
                         redditor=snoo_note.applies_to_username,
                         subreddit=snoo_note.sub_name,
                         thing=determine_submission_or_comment(reddit=self._reddit, url=snoo_note.url),
-                    )
+                    ):
+                        self._log.info("Created Mod Note for Redditor %r", snoo_note.applies_to_username)
+                    else:
+                        self._log.error("Unable to convert SnooNote %r", snoo_note.note_id)
 
             else:
                 # Only a single Mod Note needs to be created
                 self._log.info("Creating single Mod Note for SnooNote %r", snoo_note.note_id)
-                self._post_to_reddit(
+                if self._post_to_reddit(
                     label=SNOONOTE_TO_MOD_NOTE_LABELS[self.note_type_map[snoo_note.note_type_id].display_name],
                     note=full_message,
                     redditor=snoo_note.applies_to_username,
                     subreddit=snoo_note.sub_name,
                     thing=determine_submission_or_comment(reddit=self._reddit, url=snoo_note.url),
-                )
+                ):
+                    self._log.info("Created Mod Note for Redditor %r", snoo_note.applies_to_username)
+                else:
+                    self._log.error("Unable to convert SnooNote %r", snoo_note.note_id)
