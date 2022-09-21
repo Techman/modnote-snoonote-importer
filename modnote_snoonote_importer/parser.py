@@ -269,6 +269,13 @@ class SnooNoteParser:
             header = f"[{time}] [/u/{author}]\n"
             full_message = header + snoo_note.message
 
+            # Figure out if the "thing" field is relevant. It can be a Submission or Comment, but it MUST be
+            # related to the subreddit the note is being made on
+            if snoo_note.sub_name.lower() in snoo_note.url.lower():
+                thing = determine_submission_or_comment(reddit=self._reddit, url=snoo_note.url)
+            else:
+                thing = None
+
             # Check message length
             if len(full_message) > MOD_NOTE_MESSAGE_LENGTH:
                 # Break up the message
@@ -276,12 +283,14 @@ class SnooNoteParser:
                     header=header, message=snoo_note.message, max_size=MOD_NOTE_MESSAGE_LENGTH
                 ):
                     self._log.info("Creating segmented Mod Note for SnooNote %r", snoo_note.note_id)
+
+                    # Attempt to post to Reddit
                     if self._post_to_reddit(
                         label=SNOONOTE_TO_MOD_NOTE_LABELS[self.note_type_map[snoo_note.note_type_id].display_name],
                         note=message,
                         redditor=snoo_note.applies_to_username,
                         subreddit=snoo_note.sub_name,
-                        thing=determine_submission_or_comment(reddit=self._reddit, url=snoo_note.url),
+                        thing=thing,
                     ):
                         self._log.info("Created Mod Note for Redditor %r", snoo_note.applies_to_username)
                     else:
@@ -290,12 +299,14 @@ class SnooNoteParser:
             else:
                 # Only a single Mod Note needs to be created
                 self._log.info("Creating single Mod Note for SnooNote %r", snoo_note.note_id)
+
+                # Attempt to post to Reddit
                 if self._post_to_reddit(
                     label=SNOONOTE_TO_MOD_NOTE_LABELS[self.note_type_map[snoo_note.note_type_id].display_name],
                     note=full_message,
                     redditor=snoo_note.applies_to_username,
                     subreddit=snoo_note.sub_name,
-                    thing=determine_submission_or_comment(reddit=self._reddit, url=snoo_note.url),
+                    thing=thing,
                 ):
                     self._log.info("Created Mod Note for Redditor %r", snoo_note.applies_to_username)
                 else:
