@@ -230,11 +230,12 @@ class SnooNoteParser:
         self._log.debug("Successfully parsed the export file")
 
     @sleep_and_retry
-    @limits(calls=60, period=60 * 1)
+    @limits(calls=30, period=60 * 1)
+    # https://www.reddit.com/r/modnews/comments/t8vafc/announcing_mod_notes/ see "Import notes" - says 30 calls/min
     def _post_to_reddit(self, **kwargs):
         """Post a Mod Note to Reddit
 
-        This function is decorated with a rate limiter (currently 60 calls/minute) and will sleep before continuing.
+        This function is decorated with a rate limiter (currently 30 calls/minute) and will sleep before continuing.
 
         Arguments:
             reddit -- PRAW Reddit instance
