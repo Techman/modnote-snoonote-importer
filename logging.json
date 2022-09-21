@@ -12,7 +12,7 @@
             "level": "DEBUG",
             "formatter": "default",
             "filename": "_DefaultName_Logs_Debug.log",
-            "maxBytes": 10485760,
+            "maxBytes": 1074000000,
             "backupCount": 5,
             "encoding": "utf8"
         },
@@ -21,7 +21,7 @@
             "level": "INFO",
             "formatter": "default",
             "filename": "_DefaultName_Logs.log",
-            "maxBytes": 10485760,
+            "maxBytes": 1074000000,
             "backupCount": 5,
             "encoding": "utf8"
         },
