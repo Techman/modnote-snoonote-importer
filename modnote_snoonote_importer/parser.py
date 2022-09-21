@@ -5,9 +5,13 @@ import json
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 
 import dateutil.parser
+import praw
+import praw.exceptions
+import praw.models
+from ratelimit import limits, sleep_and_retry
 
 REDDIT_MOD_NOTE_LABELS: dict[str, str] = {
     "ABUSE_WARNING": "Abuse Warning",
@@ -70,10 +74,70 @@ class SnooNote:
     parent_subreddit: Optional[str]
 
 
+def determine_submission_or_comment(
+    *, reddit: praw.Reddit, url: str
+) -> Union[praw.models.Submission, praw.models.Comment]:
+    """Determine if a given URL belongs to a submission or comment, and return the corresponding object
+
+    Arguments:
+        url -- URL of a Reddit submission or comment
+
+    Raises:
+        praw.exceptions.InvalidURL -- only raised if neither could be returned
+
+    Returns:
+        _description_
+    """
+    # Try a comment first, if the URL is specific enough
+    try:
+        item = reddit.comment(url=url)
+        return item
+    except praw.exceptions.InvalidURL:
+        pass
+
+    # Try submission
+    try:
+        item = reddit.submission(url=url)
+        return item
+    except praw.exceptions.InvalidURL:
+        pass
+
+    # Try this weird edge case
+    # https://reddit.com/r/DestinyTheGame/sgg692
+    try:
+        item = reddit.submission(id=url[-6:])
+        return item
+    except praw.exceptions.InvalidURL as e:
+        # If we made it here, we have a problem
+        raise e
+
+
+def split_message_into_chunks(*, header: str, message: str, max_size: int):
+    """Split a message into multiple smaller strings, all with the header prepended
+
+    Arguments:
+        header -- Header string
+        message -- Message string
+        max_size -- Maximum size of each chunk
+
+    Yields:
+        Chunks of the message, with max length <= max_size
+    """
+    chunk_len = max_size - len(header)
+
+    copy = message
+    while len(copy):
+
+        chunk = header + copy[:chunk_len].strip()
+        assert len(chunk) <= max_size
+        copy = copy[chunk_len:]
+        yield chunk
+
+
 class SnooNoteParser:
     """SnooNote Parser and container of parsed data"""
 
-    def __init__(self, *, data_file: str):
+    def __init__(self, *, reddit: praw.Reddit, data_file: str):
         """Init"""
         # Logging
         self._log: logging.Logger = logging.getLogger("parser")
@@ -82,6 +146,9 @@ class SnooNoteParser:
         self._note_type_map: dict[int, SnooNoteType] = {}
         self._note_types: list[SnooNoteType] = []
         self._notes: list[SnooNote] = []
+
+        # Reddit
+        self._reddit = reddit
 
         # SnooNote data file
         self._file_path: str = data_file
@@ -161,3 +228,66 @@ class SnooNoteParser:
 
         # If we made it here, we parsed the file!
         self._log.debug("Successfully parsed the export file")
+
+    @sleep_and_retry
+    @limits(calls=60, period=60 * 1)
+    def _post_to_reddit(self, **kwargs):
+        """Post a Mod Note to Reddit
+
+        This function is decorated with a rate limiter (currently 60 calls/minute) and will sleep before continuing.
+
+        Arguments:
+            reddit -- PRAW Reddit instance
+            kwargs -- Keyword arguments to be passed to PRAW for Mod Note creation
+        """
+        self._reddit.notes.create(**kwargs)
+        self._log.info("Created Mod Note for Redditor %r", kwargs["redditor"])
+
+    def convert(self):
+        """Convert parsed SnooNotes into Mod Notes
+
+        Note: depending on how many notes were imported, this can take a _LONG_ time
+        """
+        self._log.info("Starting conversion of %s notes", len(self.notes))
+
+        # Constant
+        MOD_NOTE_MESSAGE_LENGTH = 250  # pylint: disable=invalid-name
+
+        for i, snoo_note in enumerate(self.notes):
+            self._log.info(
+                "[%s] Converting note %r, created by mod %r for Redditor %r",
+                i,
+                snoo_note.note_id,
+                snoo_note.submitter,
+                snoo_note.applies_to_username,
+            )
+            time = snoo_note.timestamp.isoformat()
+            author = snoo_note.submitter
+            header = f"[{time}] [/u/{author}]\n"
+            full_message = header + snoo_note.message
+
+            # Check message length
+            if len(full_message) > MOD_NOTE_MESSAGE_LENGTH:
+                # Break up the message
+                for message in split_message_into_chunks(
+                    header=header, message=snoo_note.message, max_size=MOD_NOTE_MESSAGE_LENGTH
+                ):
+                    self._log.info("Creating segmented Mod Note for SnooNote %r", snoo_note.note_id)
+                    self._post_to_reddit(
+                        label=SNOONOTE_TO_MOD_NOTE_LABELS[self.note_type_map[snoo_note.note_type_id].display_name],
+                        note=message,
+                        redditor=snoo_note.applies_to_username,
+                        subreddit=snoo_note.sub_name,
+                        thing=determine_submission_or_comment(reddit=self._reddit, url=snoo_note.url),
+                    )
+
+            else:
+                # Only a single Mod Note needs to be created
+                self._log.info("Creating single Mod Note for SnooNote %r", snoo_note.note_id)
+                self._post_to_reddit(
+                    label=SNOONOTE_TO_MOD_NOTE_LABELS[self.note_type_map[snoo_note.note_type_id].display_name],
+                    note=full_message,
+                    redditor=snoo_note.applies_to_username,
+                    subreddit=snoo_note.sub_name,
+                    thing=determine_submission_or_comment(reddit=self._reddit, url=snoo_note.url),
+                )

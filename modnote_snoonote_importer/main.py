@@ -66,6 +66,10 @@ def main() -> None:
         username=args.username,
         password=args.password,
         user_agent="modnote-snoonote-importer by /u/Techman-",
+        # Timeout in seconds
+        # https://praw.readthedocs.io/en/stable/getting_started/ratelimits.html
+        # Seconds * Minutes * Hours
+        timeout=60 * 60 * 1,
     )
     if reddit.read_only:
         logger.error("PRAW is in read-only mode. Probably a configuration or permissions issue.")
@@ -74,5 +78,7 @@ def main() -> None:
         logger.info("Reddit set up and ready!")
 
     # Set up parser and parse data
-    parser = SnooNoteParser(data_file=args.file)
+    parser = SnooNoteParser(reddit=reddit, data_file=args.file)
     parser.parse()
+    parser.convert()
+    logger.info("Conversion complete :)")
