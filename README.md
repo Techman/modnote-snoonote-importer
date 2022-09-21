@@ -25,7 +25,7 @@ Test message #1
 this is due to not being able to specify existing author information and timestamp. All converted notes will have time and author information prepended.
 
 ## Building
-This project uses Python Poetry. It can be locally installed and run by:
+This project uses [Python Poetry](https://python-poetry.org/). It can be locally installed and run by:
 
 1. Downloading the project (or using git clone)
 2. Running `poetry install` within the project root (where you see .toml files, etc.)
@@ -33,7 +33,7 @@ This project uses Python Poetry. It can be locally installed and run by:
 This will install all necessary dependencies and install the package within the virtual environment.
 
 ## Running
-Run the project by typing `python -m modnote_snoonote_importer <args>`
+Ensure you are running inside the virtual environment by typing `poetry shell`. Run the project by typing `python -m modnote_snoonote_importer <args>`
 
 Type `python -m modnote_snoonote_importer --help` to view help information and required arguments.
 
