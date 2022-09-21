@@ -87,4 +87,3 @@ def main() -> None:
     snoonote_parser = SnooNoteParser(reddit=reddit, data_file=args.file)
     snoonote_parser.parse()
     snoonote_parser.convert()
-    logger.info("Conversion complete :)")
