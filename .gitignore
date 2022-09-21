@@ -161,3 +161,4 @@ cython_debug/
 
 # CUSTOM STUFF BELOW
 debug/
+snoonotes*.json
