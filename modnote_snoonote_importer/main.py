@@ -9,6 +9,40 @@ import praw.models
 
 from modnote_snoonote_importer.parser import SnooNoteParser
 
+# Parse arguments
+parser = ArgumentParser(description="Import SnooNotes into Reddit Mod Notes.")
+parser.add_argument(
+    "--app_id",
+    type=str,
+    required=True,
+    help="Reddit app_id for the application created for use in this script.",
+)
+parser.add_argument(
+    "--app_secret",
+    type=str,
+    required=True,
+    help="Reddit secret for the application created for use in this script.",
+)
+parser.add_argument(
+    "--username",
+    type=str,
+    required=True,
+    help="Reddit account username. Imported notes will appear as this user.",
+)
+parser.add_argument(
+    "--password",
+    type=str,
+    required=True,
+    help="Reddit account password. Imported notes will appear as this user.",
+)
+parser.add_argument(
+    "file",
+    type=str,
+    default="snoonotes.json",
+    help="Path to the SnooNotes JSON export file.",
+)
+args = parser.parse_args()
+
 
 def main() -> None:
     """Main function"""
@@ -16,40 +50,6 @@ def main() -> None:
     # Set up logging
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger("root")
-
-    # Parse arguments
-    parser = ArgumentParser(description="Import SnooNotes into Reddit Mod Notes.")
-    parser.add_argument(
-        "--app_id",
-        type=str,
-        required=True,
-        help="Reddit app_id for the application created for use in this script.",
-    )
-    parser.add_argument(
-        "--app_secret",
-        type=str,
-        required=True,
-        help="Reddit secret for the application created for use in this script.",
-    )
-    parser.add_argument(
-        "--username",
-        type=str,
-        required=True,
-        help="Reddit account username. Imported notes will appear as this user.",
-    )
-    parser.add_argument(
-        "--password",
-        type=str,
-        required=True,
-        help="Reddit account password. Imported notes will appear as this user.",
-    )
-    parser.add_argument(
-        "file",
-        type=str,
-        default="snoonotes.json",
-        help="Path to the SnooNotes JSON export file.",
-    )
-    args = parser.parse_args()
 
     # Test to make sure the file exists
     try:
@@ -78,7 +78,7 @@ def main() -> None:
         logger.info("Reddit set up and ready!")
 
     # Set up parser and parse data
-    parser = SnooNoteParser(reddit=reddit, data_file=args.file)
-    parser.parse()
-    parser.convert()
+    snoonote_parser = SnooNoteParser(reddit=reddit, data_file=args.file)
+    snoonote_parser.parse()
+    snoonote_parser.convert()
     logger.info("Conversion complete :)")
