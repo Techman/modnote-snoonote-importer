@@ -113,13 +113,11 @@ def determine_submission_or_comment(
     try:
         item = reddit.submission(id=url.rsplit(sep="/", maxsplit=1)[1])
         return item
-    except praw.exceptions.InvalidURL:
-        pass
-
-    # If we make it here, URL conversion did not work
-    log = logging.getLogger("determine_submission_or_comment")
-    log.error("Unable to determine URL %r", url)
-    return None
+    except praw.exceptions.InvalidURL as e:
+        # If we make it here, URL conversion did not work
+        log = logging.getLogger("determine_submission_or_comment")
+        log.error("Unable to determine URL %r", url)
+        raise e
 
 
 def split_message_into_chunks(*, header: str, message: str, max_size: int):
@@ -263,8 +261,17 @@ class SnooNoteParser:
             self._log.info("Created Mod Note for Redditor %r", snoo_note.applies_to_username)
             return True
         except praw.exceptions.RedditAPIException as e:
+            # User does not exist
             if e.error_type == "USER_DOESNT_EXIST":
                 self._log.error("Unable to convert SnooNote %r (USER_DOESNT_EXIST)", snoo_note.note_id)
+            # Submission/Comment not valid - try to repost note without the thing argument
+            elif e.error_type == "NO_THING_ID":
+                self._log.error(
+                    "Received NO_THING_ID for SnooNote %r - trying without 'thing' param", snoo_note.note_id
+                )
+                self._post_to_reddit(
+                    snoo_note=snoo_note, label=label, note=note, redditor=redditor, subreddit=subreddit, thing=None
+                )
             else:
                 self._log.exception(
                     "Unable to create Mod Note %s",
@@ -298,9 +305,10 @@ class SnooNoteParser:
 
             # Figure out if the "thing" field is relevant. It can be a Submission or Comment, but it MUST be
             # related to the subreddit the note is being made on
-            if snoo_note.sub_name.lower() in snoo_note.url.lower():
-                thing = determine_submission_or_comment(reddit=self._reddit, url=snoo_note.url)
-            else:
+            try:
+                if snoo_note.sub_name.lower() in snoo_note.url.lower():
+                    thing = determine_submission_or_comment(reddit=self._reddit, url=snoo_note.url)
+            except praw.exceptions.InvalidURL:
                 thing = None
 
             # Check message length
