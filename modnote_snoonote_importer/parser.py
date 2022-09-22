@@ -108,11 +108,17 @@ def determine_submission_or_comment(
     try:
         item = reddit.comment(id=url.rsplit(sep="/", maxsplit=1)[1])
         return item
+    except ValueError:
+        pass
     except praw.exceptions.InvalidURL:
         pass
     try:
         item = reddit.submission(id=url.rsplit(sep="/", maxsplit=1)[1])
         return item
+    except ValueError:
+        raise praw.exceptions.InvalidURL(  # pylint: disable=raise-missing-from
+            url=url, message="Raised via a ValueError from PRAW id= field"
+        )
     except praw.exceptions.InvalidURL as e:
         # If we make it here, URL conversion did not work
         log = logging.getLogger("determine_submission_or_comment")
