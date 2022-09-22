@@ -76,7 +76,7 @@ class SnooNote:
 
 def determine_submission_or_comment(
     *, reddit: praw.Reddit, url: str
-) -> Union[praw.models.Submission, praw.models.Comment]:
+) -> Union[praw.models.Submission, praw.models.Comment, None]:
     """Determine if a given URL belongs to a submission or comment, and return the corresponding object
 
     Arguments:
@@ -113,8 +113,13 @@ def determine_submission_or_comment(
     try:
         item = reddit.submission(id=url.rsplit(sep="/", maxsplit=1)[1])
         return item
-    except praw.exceptions.InvalidURL as e:
-        raise e
+    except praw.exceptions.InvalidURL:
+        pass
+
+    # If we make it here, URL conversion did not work
+    log = logging.getLogger("determine_submission_or_comment")
+    log.error("Unable to determine URL %r", url)
+    return None
 
 
 def split_message_into_chunks(*, header: str, message: str, max_size: int):
