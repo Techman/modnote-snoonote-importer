@@ -11,7 +11,7 @@
             "class": "logging.handlers.RotatingFileHandler",
             "level": "DEBUG",
             "formatter": "default",
-            "filename": "_DefaultName_Logs_Debug.log",
+            "filename": "log_debug.log",
             "maxBytes": 1074000000,
             "backupCount": 5,
             "encoding": "utf8"
@@ -20,7 +20,7 @@
             "class": "logging.handlers.RotatingFileHandler",
             "level": "INFO",
             "formatter": "default",
-            "filename": "_DefaultName_Logs.log",
+            "filename": "log_INFO.log",
             "maxBytes": 1074000000,
             "backupCount": 5,
             "encoding": "utf8"
