@@ -102,13 +102,18 @@ def determine_submission_or_comment(
     except praw.exceptions.InvalidURL:
         pass
 
-    # Try this weird edge case
+    # Edge cases
     # https://reddit.com/r/DestinyTheGame/sgg692
+    # https://reddit.com/r/DestinyTheGame/t86oo2/.../hzop7xf
     try:
-        item = reddit.submission(id=url[-6:])
+        item = reddit.comment(id=url.rsplit(sep="/", maxsplit=1)[1])
+        return item
+    except praw.exceptions.InvalidURL:
+        pass
+    try:
+        item = reddit.submission(id=url.rsplit(sep="/", maxsplit=1)[1])
         return item
     except praw.exceptions.InvalidURL as e:
-        # If we made it here, we have a problem
         raise e
 
 
