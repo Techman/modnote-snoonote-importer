@@ -238,8 +238,8 @@ class SnooNoteParser:
         self._log.debug("Successfully parsed the export file")
 
     # https://www.reddit.com/r/modnews/comments/t8vafc/announcing_mod_notes/ see "Import notes" - says 30 calls/min
-    @sleep_and_retry
-    @limits(calls=30, period=60 * 1)
+    # @sleep_and_retry
+    # @limits(calls=30, period=60 * 1)
     def _post_to_reddit(
         self,
         *,
