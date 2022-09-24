@@ -11,7 +11,6 @@ import dateutil.parser
 import praw
 import praw.exceptions
 import praw.models
-from ratelimit import limits, sleep_and_retry
 
 REDDIT_MOD_NOTE_LABELS: dict[str, str] = {
     "ABUSE_WARNING": "Abuse Warning",
@@ -241,9 +240,6 @@ class SnooNoteParser:
         # If we made it here, we parsed the file!
         self._log.debug("Successfully parsed the export file")
 
-    # https://www.reddit.com/r/modnews/comments/t8vafc/announcing_mod_notes/ see "Import notes" - says 30 calls/min
-    # @sleep_and_retry
-    # @limits(calls=30, period=60 * 1)
     def _post_to_reddit(
         self,
         *,
@@ -256,11 +252,18 @@ class SnooNoteParser:
     ) -> bool:
         """Post a Mod Note to Reddit
 
-        This function is decorated with a rate limiter (currently 30 calls/minute) and will sleep before continuing.
+        Note: This function is not rate-limited, as PRAW can handle this. Limits can be changed by Reddit.
 
         Arguments:
-            reddit -- PRAW Reddit instance
-            kwargs -- Keyword arguments to be passed to PRAW for Mod Note creation
+            snoo_note -- SnooNote to be converted (used for logging errors)
+            label -- Reddit Mod Note label
+            note -- Actual note text
+            redditor -- Reddit username of the note target
+            subreddit -- Subreddit the note is being added to
+            thing -- Submission, Comment, str of PRAW Fullname (see docs), or None
+
+        Returns:
+            True if note was posted, False otherwise
         """
         try:
             self._reddit.notes.create(label=label, note=note, redditor=redditor, subreddit=subreddit, thing=thing)
