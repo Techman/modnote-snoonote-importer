@@ -68,8 +68,7 @@ def main() -> None:
     if reddit.read_only:
         logger.error("PRAW is in read-only mode. Probably a configuration or permissions issue.")
         return
-    else:
-        logger.info("Reddit set up and ready!")
+    logger.info("Reddit set up and ready!")
 
     # Set up parser and parse data
     snoonote_parser = SnooNoteParser(reddit=reddit, data_file=args.file)
