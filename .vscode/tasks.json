@@ -15,6 +15,23 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "pytest: Test",
+            "type": "shell",
+            "command": "poetry",
+            "args": [
+                "run",
+                "python",
+                "--",
+                "-m",
+                "pytest"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
         }
     ]
 }
