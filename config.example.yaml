@@ -1,0 +1,12 @@
+# SnooNote to Mod Note Importer Configuration
+
+# Reddit configuration
+reddit:
+  # App ID: obtained when creating a Reddit application
+  app_id: ""
+  # App secret: obtained when creating a Reddit application
+  app_secret: ""
+  # Username: the account username notes will be submitted from
+  username: ""
+  # Password: the account password notes will be submitted from
+  password: ""
