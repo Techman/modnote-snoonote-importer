@@ -11,6 +11,7 @@ import dateutil.parser
 import praw
 import praw.exceptions
 import praw.models
+import prawcore.exceptions
 
 REDDIT_MOD_NOTE_LABELS: dict[str, str] = {
     "ABUSE_WARNING": "Abuse Warning",
@@ -81,11 +82,8 @@ def determine_submission_or_comment(
     Arguments:
         url -- URL of a Reddit submission or comment
 
-    Raises:
-        praw.exceptions.InvalidURL -- only raised if neither could be returned
-
     Returns:
-        _description_
+        Submission or Comment if valid, otherwise None
     """
     # Try a comment first, if the URL is specific enough
     try:
@@ -104,25 +102,30 @@ def determine_submission_or_comment(
     # Edge cases
     # https://reddit.com/r/DestinyTheGame/sgg692
     # https://reddit.com/r/DestinyTheGame/t86oo2/.../hzop7xf
+    #
+    # If it is not a comment, a ClientException is raised
+    # If it is not a submission, a NotFound is raised
     try:
         item = reddit.comment(id=url.rsplit(sep="/", maxsplit=1)[1])
-        return item
+        if item.subreddit:
+            return item
+        raise praw.exceptions.InvalidURL(url=url)
     except ValueError:
         pass
     except praw.exceptions.InvalidURL:
         pass
+    except praw.exceptions.ClientException:
+        pass
     try:
         item = reddit.submission(id=url.rsplit(sep="/", maxsplit=1)[1])
-        return item
-    except ValueError:
-        raise praw.exceptions.InvalidURL(  # pylint: disable=raise-missing-from
-            url=url, message="Raised via a ValueError from PRAW id= field"
-        )
-    except praw.exceptions.InvalidURL as e:
+        if item.subreddit:
+            return item
+        raise praw.exceptions.InvalidURL(url=url, message="Raised because if item.subreddit check failed")
+    except (ValueError, prawcore.exceptions.NotFound, praw.exceptions.InvalidURL):
         # If we make it here, URL conversion did not work
         log = logging.getLogger("determine_submission_or_comment")
-        log.error("Unable to determine URL %r", url)
-        raise e
+        log.exception("Unable to determine URL %r", url)
+        return None
 
 
 def split_message_into_chunks(*, header: str, message: str, max_size: int):
@@ -314,11 +317,7 @@ class SnooNoteParser:
 
             # Figure out if the "thing" field is relevant. It can be a Submission or Comment, but it MUST be
             # related to the subreddit the note is being made on
-            try:
-                if snoo_note.sub_name.lower() in snoo_note.url.lower():
-                    thing = determine_submission_or_comment(reddit=self._reddit, url=snoo_note.url)
-            except praw.exceptions.InvalidURL:
-                thing = None
+            thing = determine_submission_or_comment(reddit=self._reddit, url=snoo_note.url)
 
             # Check message length
             if len(full_message) > MOD_NOTE_MESSAGE_LENGTH:
