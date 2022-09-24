@@ -1,6 +1,5 @@
 """Import SnooNotes into Mod Notes"""
 
-import json
 import logging
 import logging.config
 from argparse import ArgumentParser
@@ -9,6 +8,7 @@ import praw
 import praw.exceptions
 import praw.models
 
+from modnote_snoonote_importer.logger import setup_logger
 from modnote_snoonote_importer.parser import SnooNoteParser
 
 # Parse arguments
@@ -50,11 +50,7 @@ def main() -> None:
     """Main function"""
 
     # Set up logging
-    try:
-        with open("logging.json", "rt", encoding="utf8") as file:
-            logging.config.dictConfig(json.load(file))
-    except OSError:
-        logging.basicConfig(level=logging.INFO)
+    setup_logger()
     logger = logging.getLogger("root")
 
     # Setup Reddit
