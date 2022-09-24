@@ -237,7 +237,7 @@ class SnooNoteParser:
                     self._notes.append(note)
                 self._log.info("Parsed %s notes", len(json_output.get("Notes", [])))
         except OSError:
-            self._log.exception("Unable to open/read the export file.")
+            self._log.exception("SnooNotes file not found or unable to be opened.")
             return
 
         # If we made it here, we parsed the file!

@@ -57,14 +57,6 @@ def main() -> None:
         logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger("root")
 
-    # Test to make sure the file exists
-    try:
-        with open(args.file, "rt", encoding="utf8") as _:
-            pass
-    except OSError:
-        logger.exception("SnooNotes file not found or unable to be opened.")
-        return
-
     # Setup Reddit
     reddit: praw.models.Redditor = praw.Reddit(
         client_id=args.app_id,
