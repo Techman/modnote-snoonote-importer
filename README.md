@@ -51,3 +51,8 @@ Before running, you will need a user account (preferably a bot account) with the
 
 ## Bugs/Issues
 Please file a GitHub issue if you are having issues with using the utility. Please include as much information as possible, but **do not post your authentication credentials publicly**.
+
+## Testing
+This project uses `pytest` for tests. You can run them inside the virtual environment by running `pytest` or `python -m pytest`. These tests do make use of the Reddit API.
+
+**Note**: A configuration file ***must*** be used for tests. The tests will look for a `config.yaml` file before proceeding.
