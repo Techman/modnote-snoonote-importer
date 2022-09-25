@@ -157,6 +157,7 @@ class SnooNoteParser:
         """Init"""
         # Logging
         self._log: logging.Logger = logging.getLogger("parser")
+        self._log.info("Initializing parser with data file %r", data_file)
 
         # Containers to store data
         self._note_type_map: dict[int, SnooNoteType] = {}

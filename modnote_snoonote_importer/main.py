@@ -52,6 +52,7 @@ def main() -> None:
     # Set up logging
     setup_logger()
     logger = logging.getLogger("root")
+    logger.info("Starting SnooNote to Mod Note Importer")
 
     # Setup Reddit
     reddit: praw.models.Redditor = praw.Reddit(
@@ -59,7 +60,7 @@ def main() -> None:
         client_secret=args.app_secret,
         username=args.username,
         password=args.password,
-        user_agent="modnote-snoonote-importer by /u/Techman-",
+        user_agent="python:modnote-snoonote-importer (by /u/Techman-)",
         # Timeout in seconds
         # https://praw.readthedocs.io/en/stable/getting_started/ratelimits.html
         # Seconds * Minutes * Hours
