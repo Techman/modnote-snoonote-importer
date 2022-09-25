@@ -311,7 +311,7 @@ class SnooNoteParser:
                 snoo_note.submitter,
                 snoo_note.applies_to_username,
             )
-            time = snoo_note.timestamp.isoformat()
+            time = snoo_note.timestamp.isoformat(timespec="seconds")
             author = snoo_note.submitter
             header = f"[{time}] [/u/{author}]\n"
             full_message = header + snoo_note.message
