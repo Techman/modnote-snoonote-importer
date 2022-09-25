@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "modnote-snoonote-importer"
 version = "0.1.0"
-description = ""
+description = "Import SnooNotes into Reddit Mod Notes"
 authors = ["Michael Hazell <michaelhazell@hotmail.com>"]
 readme = "README.md"
 packages = [{include = "modnote_snoonote_importer"}]
