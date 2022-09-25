@@ -35,7 +35,17 @@ This will install all necessary dependencies and install the package within the 
 ## Running
 Ensure you are running inside the virtual environment by typing `poetry shell`. Run the project by typing `python -m modnote_snoonote_importer <args>`
 
+There are two options for running: using command line arguments, or specifying a configuration file. If both are supplied, the command line arguments are used.
+
+### Using command line arguments
+
 Type `python -m modnote_snoonote_importer --help` to view help information and required arguments.
+
+Example:
+`python -m modnote_snoonote-importer --app_id 'app id' --app_secret 'keep this safe' --username 'AVeryNiceBot' --password 'hunter2' <export file>`
+
+### Using a configuration file
+Copy `config.example.yaml` to `config.yaml` and fill in the empty fields. Every field is explained with a comment immediately above it. Then, run using `python -m modnote_snoonote_importer --config config.yaml <export file>`
 
 Before running, you will need a user account (preferably a bot account) with the **Manage Users** permission on the subreddit you are importing into. You will also need to create a [custom application](https://old.reddit.com/prefs/apps/) on Old Reddit to receive your own `app_id` and `app_secret`. You will also need the account's `username` and `password` handy.
 

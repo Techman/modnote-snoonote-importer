@@ -7,6 +7,7 @@ from argparse import ArgumentParser
 import praw
 import praw.exceptions
 import praw.models
+import yaml
 
 from modnote_snoonote_importer.logger import setup_logger
 from modnote_snoonote_importer.parser import SnooNoteParser
@@ -14,27 +15,34 @@ from modnote_snoonote_importer.parser import SnooNoteParser
 # Parse arguments
 parser = ArgumentParser(description="Import SnooNotes into Reddit Mod Notes.")
 parser.add_argument(
+    "--config",
+    "--conf",
+    type=str,
+    required=False,
+    help="Path to the configuration file. Can be used in place of specifying other arguments. See config.example.yaml as an example.",
+)
+parser.add_argument(
     "--app_id",
     type=str,
-    required=True,
+    required=False,
     help="Reddit app_id for the application created for use in this script.",
 )
 parser.add_argument(
     "--app_secret",
     type=str,
-    required=True,
+    required=False,
     help="Reddit secret for the application created for use in this script.",
 )
 parser.add_argument(
     "--username",
     type=str,
-    required=True,
+    required=False,
     help="Reddit account username. Imported notes will appear as this user.",
 )
 parser.add_argument(
     "--password",
     type=str,
-    required=True,
+    required=False,
     help="Reddit account password. Imported notes will appear as this user.",
 )
 parser.add_argument(
@@ -54,12 +62,30 @@ def main() -> None:
     logger = logging.getLogger("root")
     logger.info("Starting SnooNote to Mod Note Importer")
 
+    # Load configuration if present
+    if args.config:
+        try:
+            with open(args.config, "rt", encoding="utf8") as file:
+                config = yaml.safe_load(file)
+        except OSError:
+            logger.exception("Unable to open/read configuration file %r", args.config)
+            return
+    # Make sure command line args have been specified if the config file was not
+    else:
+        for arg in (args.app_id, args.app_secret, args.username, args.password):
+            if arg is None:
+                logger.error(
+                    "The app_id, app_secret, username, and password arguments must be specified if a configuration file"
+                    " is not supplied."
+                )
+                return
+
     # Setup Reddit
     reddit: praw.models.Redditor = praw.Reddit(
-        client_id=args.app_id,
-        client_secret=args.app_secret,
-        username=args.username,
-        password=args.password,
+        client_id=args.app_id or config.get("reddit").get("app_id"),
+        client_secret=args.app_secret or config.get("reddit").get("app_secret"),
+        username=args.username or config.get("reddit").get("username"),
+        password=args.password or config.get("reddit").get("password"),
         user_agent="python:modnote-snoonote-importer (by /u/Techman-)",
         # Timeout in seconds
         # https://praw.readthedocs.io/en/stable/getting_started/ratelimits.html
