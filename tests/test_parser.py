@@ -1,12 +1,32 @@
 """Tests for the SnooNote parser"""
 
+from datetime import datetime, timezone
 from types import NoneType
 
 import praw
 import praw.exceptions
 import praw.models
 
-from modnote_snoonote_importer.parser import determine_submission_or_comment
+from modnote_snoonote_importer.parser import determine_submission_or_comment, split_message_into_chunks
+
+
+def test_split_message() -> None:
+    """Test splitting long notes into smaller messages"""
+    # https://loremipsum.io/
+    # Note text
+    lorem_ipsum = (
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore"
+        " et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex"
+        " ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat"
+        " nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit"
+        " anim id estlaborum."
+    )
+    # Coment header
+    header = f"[{datetime.now(timezone.utc).isoformat(timespec='seconds')}] [/u/Techman-]"
+    # Current length limit for Mod Notes as of time of this commit
+    length_limit = 250
+    for message in split_message_into_chunks(header=header, message=lorem_ipsum, max_size=length_limit):
+        assert len(message) <= length_limit
 
 
 def test_valid_submission_url(reddit: praw.Reddit):

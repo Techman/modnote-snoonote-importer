@@ -145,7 +145,6 @@ def split_message_into_chunks(*, header: str, message: str, max_size: int):
     while len(copy):
 
         chunk = header + copy[:chunk_len].strip()
-        assert len(chunk) <= max_size
         copy = copy[chunk_len:]
         yield chunk
 
