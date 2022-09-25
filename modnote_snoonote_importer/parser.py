@@ -55,7 +55,7 @@ class SnooNoteType:
     display_order: int
     bold: bool
     italic: bool
-    icon_string: str
+    icon_string: Optional[str]
     disabled: bool
 
 

@@ -3,11 +3,58 @@
 from datetime import datetime, timezone
 from types import NoneType
 
+import dateutil.parser
 import praw
 import praw.exceptions
 import praw.models
 
-from modnote_snoonote_importer.parser import determine_submission_or_comment, split_message_into_chunks
+from modnote_snoonote_importer.parser import (
+    SnooNote,
+    SnooNoteParser,
+    SnooNoteType,
+    determine_submission_or_comment,
+    split_message_into_chunks,
+)
+
+
+def test_parser(reddit: praw.Reddit) -> None:
+    """Test parsing of SnooNotes and Note Types"""
+    parser = SnooNoteParser(reddit=reddit, data_file="tests/snoonotes.json")
+    parser.parse()
+
+    # Only one note should have been parsed
+    assert len(parser.notes) == 1
+
+    # Check that the note values match what is in the file
+    assert parser.notes[0] is not None
+    note = parser.notes[0]
+    assert isinstance(note, SnooNote)
+    assert note.note_id == 1
+    assert note.note_type_id == 12
+    assert note.sub_name == "Techman"
+    assert note.submitter == "Techman-"
+    assert note.message == "Test message"
+    assert note.applies_to_username == "Techman-"
+    assert note.url == "https://www.reddit.com/r/Techman/comments/quln8b/hello_world/"
+    assert note.timestamp == dateutil.parser.parse(timestr="2022-09-23T18:46:14.15Z")
+
+    # There should be 9 note types
+    assert len(parser.note_types) == 10
+
+    # Check that the "Good User" type is correct
+    assert parser.note_type_map is not None
+    assert 12 in parser.note_type_map
+    note_type = parser.note_type_map[12]
+    assert isinstance(note_type, SnooNoteType)
+    assert note_type.note_type_id == 12
+    assert note_type.sub_name == "Techman"
+    assert note_type.display_name == "Good User"
+    assert note_type.color_code == "008000"
+    assert note_type.display_order == 1
+    assert note_type.bold is False
+    assert note_type.italic is False
+    assert note_type.icon_string is None
+    assert note_type.disabled is False
 
 
 def test_split_message() -> None:

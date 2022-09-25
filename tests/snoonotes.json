@@ -1,0 +1,127 @@
+{
+    "NoteTypes": [
+        {
+            "NoteTypeID": 19,
+            "SubName": "Techman",
+            "DisplayName": "None",
+            "ColorCode": "000000",
+            "DisplayOrder": 0,
+            "Bold": false,
+            "Italic": false,
+            "IconString": null,
+            "Disabled": false
+        },
+        {
+            "NoteTypeID": 12,
+            "SubName": "Techman",
+            "DisplayName": "Good User",
+            "ColorCode": "008000",
+            "DisplayOrder": 1,
+            "Bold": false,
+            "Italic": false,
+            "IconString": null,
+            "Disabled": false
+        },
+        {
+            "NoteTypeID": 13,
+            "SubName": "Techman",
+            "DisplayName": "Spam Watch",
+            "ColorCode": "FF00FF",
+            "DisplayOrder": 2,
+            "Bold": false,
+            "Italic": false,
+            "IconString": null,
+            "Disabled": false
+        },
+        {
+            "NoteTypeID": 14,
+            "SubName": "Techman",
+            "DisplayName": "Spam Warn",
+            "ColorCode": "800080",
+            "DisplayOrder": 3,
+            "Bold": false,
+            "Italic": false,
+            "IconString": null,
+            "Disabled": false
+        },
+        {
+            "NoteTypeID": 1205,
+            "SubName": "Techman",
+            "DisplayName": "Spam Ban",
+            "ColorCode": "2d74ff",
+            "DisplayOrder": 4,
+            "Bold": false,
+            "Italic": false,
+            "IconString": "",
+            "Disabled": false
+        },
+        {
+            "NoteTypeID": 1206,
+            "SubName": "Techman",
+            "DisplayName": "Spam Perma",
+            "ColorCode": "0012b1",
+            "DisplayOrder": 5,
+            "Bold": false,
+            "Italic": false,
+            "IconString": "",
+            "Disabled": false
+        },
+        {
+            "NoteTypeID": 15,
+            "SubName": "Techman",
+            "DisplayName": "Abuse Warning",
+            "ColorCode": "FFA500",
+            "DisplayOrder": 6,
+            "Bold": false,
+            "Italic": false,
+            "IconString": null,
+            "Disabled": false
+        },
+        {
+            "NoteTypeID": 16,
+            "SubName": "Techman",
+            "DisplayName": "Ban",
+            "ColorCode": "FF0000",
+            "DisplayOrder": 7,
+            "Bold": false,
+            "Italic": false,
+            "IconString": null,
+            "Disabled": false
+        },
+        {
+            "NoteTypeID": 17,
+            "SubName": "Techman",
+            "DisplayName": "Perma Ban",
+            "ColorCode": "8B0000",
+            "DisplayOrder": 8,
+            "Bold": false,
+            "Italic": false,
+            "IconString": null,
+            "Disabled": false
+        },
+        {
+            "NoteTypeID": 18,
+            "SubName": "Techman",
+            "DisplayName": "Shadow Ban",
+            "ColorCode": "000000",
+            "DisplayOrder": 9,
+            "Bold": false,
+            "Italic": false,
+            "IconString": null,
+            "Disabled": false
+        }
+    ],
+    "Notes": [
+        {
+            "NoteID": 1,
+            "NoteTypeID": 12,
+            "SubName": "Techman",
+            "Submitter": "Techman-",
+            "Message": "Test message",
+            "AppliesToUsername": "Techman-",
+            "Url": "https://www.reddit.com/r/Techman/comments/quln8b/hello_world/",
+            "Timestamp": "2022-09-24T18:46:14.15Z",
+            "ParentSubreddit": null
+        }
+    ]
+}
