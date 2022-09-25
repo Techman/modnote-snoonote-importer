@@ -19,7 +19,8 @@ parser.add_argument(
     "--conf",
     type=str,
     required=False,
-    help="Path to the configuration file. Can be used in place of specifying other arguments. See config.example.yaml as an example.",
+    help="Path to the configuration file. Can be used in place of specifying other arguments. See config.example.yaml"
+    " as an example.",
 )
 parser.add_argument(
     "--app_id",
