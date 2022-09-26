@@ -25,7 +25,8 @@
                 "python",
                 "--",
                 "-m",
-                "pytest"
+                "pytest",
+                "--cov"
             ],
             "problemMatcher": [],
             "group": {
