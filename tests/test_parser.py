@@ -36,7 +36,7 @@ def test_parser(reddit: praw.Reddit) -> None:
     assert note.message == "Test message"
     assert note.applies_to_username == "Techman-"
     assert note.url == "https://www.reddit.com/r/Techman/comments/quln8b/hello_world/"
-    assert note.timestamp == dateutil.parser.parse(timestr="2022-09-23T18:46:14.15Z")
+    assert note.timestamp == dateutil.parser.parse(timestr="2022-09-24T18:46:14.15Z")
 
     # There should be 9 note types
     assert len(parser.note_types) == 10
