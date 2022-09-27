@@ -33,7 +33,7 @@ SNOONOTE_TO_MOD_NOTE_LABELS: dict[str, Optional[str]] = {
     "Good User": "SOLID_CONTRIBUTOR",
     "None": None,
     "Perma Ban": "PERMA_BAN",
-    "Shadow Ban": "ABUSE_WARNING",
+    "Shadow Ban": "BOT_BAN",
     "Spam Ban": "BAN",
     "Spam Perma": "PERMA_BAN",
     "Spam Warn": "SPAM_WARNING",
