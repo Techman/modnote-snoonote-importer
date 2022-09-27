@@ -16,7 +16,7 @@ import prawcore.exceptions
 REDDIT_MOD_NOTE_LABELS: dict[str, str] = {
     "ABUSE_WARNING": "Abuse Warning",
     "BAN": "Ban",
-    "BOT_BAN": "Bot Ban",
+    "BOT_BAN": "Shadow Ban",
     "HELPFUL_USER": "Helpful User",
     "PERMA_BAN": "Permanent Ban",
     "SOLID_CONTRIBUTOR": "Solid Contributor",
