@@ -312,7 +312,7 @@ class SnooNoteParser:
             )
             time = snoo_note.timestamp.isoformat(timespec="seconds")
             author = snoo_note.submitter
-            header = f"[{time}] [/u/{author}]\n"
+            header = f"[{time}] [u/{author}]\n"
             full_message = header + snoo_note.message
 
             # Figure out if the "thing" field is relevant. It can be a Submission or Comment, but it MUST be
