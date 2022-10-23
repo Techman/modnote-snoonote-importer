@@ -13,13 +13,13 @@ This utility:
 
 Converted notes will appear in the following format:
 ```
-[ISO date string] [/u/moderator_name]
+[ISO date string] [u/moderator_name]
 text
 ```
 
 Example:
 ```
-[2022-09-20T23:58:10+00:00] [/u/Techman-]
+[2022-09-20T23:58:10+00:00] [u/Techman-]
 Test message #1
 ```
 this is due to not being able to specify existing author information and timestamp. All converted notes will have time and author information prepended.
