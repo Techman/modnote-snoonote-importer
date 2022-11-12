@@ -9,8 +9,8 @@ import praw.exceptions
 import praw.models
 import yaml
 
-from modnote_snoonote_importer.logger import setup_logger
-from modnote_snoonote_importer.parser import SnooNoteParser
+from .logger import setup_logger
+from .parser import SnooNoteParser
 
 # Parse arguments
 parser = ArgumentParser(description="Import SnooNotes into Reddit Mod Notes.")
