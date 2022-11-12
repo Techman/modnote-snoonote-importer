@@ -83,10 +83,10 @@ def main() -> None:
 
     # Setup Reddit
     reddit: praw.Reddit = praw.Reddit(
-        client_id=args.app_id or config.get("reddit").get("app_id"),
-        client_secret=args.app_secret or config.get("reddit").get("app_secret"),
-        username=args.username or config.get("reddit").get("username"),
-        password=args.password or config.get("reddit").get("password"),
+        client_id=args.app_id or config.get("reddit").get("app_id"),  # type: ignore
+        client_secret=args.app_secret or config.get("reddit").get("app_secret"),  # type: ignore
+        username=args.username or config.get("reddit").get("username"),  # type: ignore
+        password=args.password or config.get("reddit").get("password"),  # type: ignore
         user_agent="python:modnote-snoonote-importer (by /u/Techman-)",
         # Timeout in seconds
         # https://praw.readthedocs.io/en/stable/getting_started/ratelimits.html

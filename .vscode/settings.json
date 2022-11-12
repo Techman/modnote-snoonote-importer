@@ -2,5 +2,6 @@
     "python.formatting.provider": "black",
     "python.linting.pylintEnabled": true,
     "python.terminal.activateEnvInCurrentTerminal": true,
-    "autoDocstring.docstringFormat": "pep257"
+    "autoDocstring.docstringFormat": "pep257",
+    "python.analysis.typeCheckingMode": "basic"
 }

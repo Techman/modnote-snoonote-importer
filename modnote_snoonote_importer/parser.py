@@ -247,7 +247,7 @@ class SnooNoteParser:
         self,
         *,
         snoo_note: SnooNote,
-        label: str,
+        label: Union[str, None],
         note: str,
         redditor: str,
         subreddit: str,
