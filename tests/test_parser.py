@@ -69,7 +69,7 @@ def test_split_message() -> None:
         " anim id estlaborum."
     )
     # Coment header
-    header = f"[{datetime.now(timezone.utc).isoformat(timespec='seconds')}] [/u/Techman-]"
+    header = f"[{datetime.now(timezone.utc).isoformat(timespec='seconds')}] [u/Techman-]"
     # Current length limit for Mod Notes as of time of this commit
     length_limit = 250
     for message in split_message_into_chunks(header=header, message=lorem_ipsum, max_size=length_limit):
