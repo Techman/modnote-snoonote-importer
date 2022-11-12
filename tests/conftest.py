@@ -21,7 +21,7 @@ def conf() -> dict:
 
 
 @pytest.fixture(scope="session")
-def reddit(conf) -> dict:  # pylint: disable=redefined-outer-name
+def reddit(conf) -> praw.Reddit:  # pylint: disable=redefined-outer-name
     """Retrieve a PRAW Reddit instance"""
     instance: praw.Reddit = praw.Reddit(
         client_id=conf.get("reddit").get("app_id"),
