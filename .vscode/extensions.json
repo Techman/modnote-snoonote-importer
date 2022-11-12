@@ -2,6 +2,8 @@
     "recommendations": [
         "ms-python.python",
         "editorconfig.editorconfig",
-        "njpwerner.autodocstring"
+        "njpwerner.autodocstring",
+        "ms-python.isort",
+        "ms-python.black-formatter"
     ]
 }

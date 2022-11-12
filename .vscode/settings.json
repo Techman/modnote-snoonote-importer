@@ -1,7 +1,17 @@
 {
-    "python.formatting.provider": "black",
     "python.linting.pylintEnabled": true,
     "python.terminal.activateEnvInCurrentTerminal": true,
     "autoDocstring.docstringFormat": "pep257",
-    "python.analysis.typeCheckingMode": "basic"
+    "python.analysis.typeCheckingMode": "basic",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        },
+    },
+    "isort.args": [
+        "--profile",
+        "black"
+    ],
 }
