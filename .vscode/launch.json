@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Python: Module",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "modnote_snoonote_importer",
             "justMyCode": true,
@@ -16,7 +16,7 @@
         },
         {
             "name": "Python: Test",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "pytest",
             "justMyCode": true
